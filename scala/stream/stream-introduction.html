@@ -1,0 +1,222 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>イントロダクション &#8212; Akka Documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/style.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/prettify.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/base.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/docs.css" type="text/css" />
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '@version@',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/translations.js"></script>
+    <script type="text/javascript" src="../../_static/toc.js"></script>
+    <script type="text/javascript" src="../../_static/prettify.js"></script>
+    <script type="text/javascript" src="../../_static/highlightCode.js"></script>
+    <script type="text/javascript" src="../../_static/effects.core.js"></script>
+    <script type="text/javascript" src="../../_static/effects.highlight.js"></script>
+    <script type="text/javascript" src="../../_static/scrollTo.js"></script>
+    <script type="text/javascript" src="../../_static/contentsFix.js"></script>
+    <script type="text/javascript" src="../../_static/ga.js"></script>
+    <script type="text/javascript" src="../../_static/warnOldDocs.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Akka Documentation" href="../../index.html" />
+    <link rel="up" title="ストリーム" href="index.html" />
+    <link rel="next" title="クイックスタートガイド" href="stream-quickstart.html" />
+    <link rel="prev" title="ストリーム" href="index.html" />
+
+
+  </head>
+  <body role="document">
+  <div class="navbar">
+    <div class="navbar-inner">
+      <div class="container">
+        <div class="navbar-logo">
+          <a href="http://akka.io"><img class="svg-logo" src="../../_static/akka_full_color.svg" /></a>
+        </div>
+        <ul class="nav">
+          <li><a href="http://akka.io/docs">Documentation</a></li>
+          <li><a href="http://doc.akka.io/docs/akka/current/additional/faq.html">FAQ</a></li>
+          <li><a href="http://akka.io/downloads">Download</a></li>
+          <li><a href="http://groups.google.com/group/akka-user">Mailing List</a></li>
+          <li><a href="http://github.com/akka/akka">Code</a></li>
+          <li><a href="http://www.lightbend.com/how/subscription">Commercial Support</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="main">
+    <div class="container">
+      <div class="page-title">イントロダクション</div>
+      <div class="pdf-link"><a href="../../AkkaScala.pdf" title="Akka Scala Documentation"><img src="../../_static/pdf-scala-icon.png" style="height: 40px;" /></a></div>
+      <div class="pdf-link"><a href="../../AkkaJava.pdf" title="Akka Java Documentation"><img src="../../_static/pdf-java-icon.png" style="height: 40px;" /></a></div>
+    </div>
+    <div class="main-container">
+      <div class="container">
+        <div class="row">
+          <div class="span12">
+            <ul class="breadcrumb">
+              <li>
+                 <span class="divider">|</span> <a href="stream-quickstart.html">クイックスタートガイド</a> <span class="divider">»</span>
+              </li>
+              <li>
+                <a href="../../java.html">Java Contents</a> <span class="divider">|</span> <a href="../../scala.html">Scala Contents</a>
+              </li>
+              <li>
+                <span class="divider">«</span> <a href="index.html">ストリーム</a> <span class="divider">|</span>
+              </li>
+              <li style="float: left">
+                Version @version@
+              </li>
+              <li style="float: left">
+                <input type="search" id="search" class="form-control" />
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="row"><div class="span9">
+            
+  <div class="section" id="introduction">
+<span id="stream-introduction-scala"></span><h1>イントロダクション</h1>
+<div class="section" id="motivation">
+<h2>モチベーション</h2>
+<p>今日わたしたちがインターネット上のサービスを利用する際、連続的なデータのダウンロードやアップロード、そしてピアツーピアのデータ通信を扱うことが増えてきています。データを全体としてではなく、連続した要素(ストリーム)として捉えることは非常に有用です。これはコンピュータが TCP などを経由してデータの送受信を行うやり方と一致しています。さらにデータセットがあまりにも巨大になり、それをひとかたまりのものとして処理できない場合、ストリームという考え方は欠かせなくなります。我々は計算処理や分析を巨大なクラスタ上に展開しそれを「ビッグデータ」と呼んでいます。ここでは複数の CPU を通して、データをシーケンシャルに、ストリームとして流しこむことがデータ処理の基本原則となっています。</p>
+<p>アクターも同様にストリームを扱うものとして捉えることができます。何故ならアクターは知識(あるいはデータ)をある場所から別の場所へ移すために、一連のメッセージを送受信しているからです。しかしアクター間のストリーミングの安定化を実現するには、メッセージの送受信に加えて処理中のバッファやメールボックスがオーバーフローを起こさないよう対処しなければいけません。その実装は厄介で、エラーを引き起こしがちなものとなってしまいます。それに加えて、アクターのメッセージは消失することがあるため、受信側に穴あきのストリームが発生しないような再送信の仕組みが必要です。さらに、決められた型をもつ要素のストリームを扱う場合、アクターは現在のところ、正しい型でメッセージの送受信が行われているかを静的に保証する術を持っていないのです。ここではより厳密な型安全が求められます。</p>
+<p>そういったわけで、我々はこれらの問題に対するソリューションを Akka Stream API として統合することにしました。Akka Stream API は、ストリーム処理に必要な機構を、直感的かつ安全なやり方で構築する仕組みを提供します。この仕組みのもとで、ストリーム処理を効率的に、そして限られたリソースのもとで実行することができるのです。もはや OutOfMemoryErrors の心配をする必要はありません。これを実現するために、ストリームはそのバッファリングを制御する必要があります。つまり消費者側が処理しきれないような場合に生産者側がスピードを落とすことができないといけないのです。この仕組みはバックプレッシャーと呼ばれ、Akka が設立メンバーである <cite>Reactive Streams</cite> イニシアチブの核ともなっています。そういった意味では、バックプレッシャーをどう伝播しそれに応答するかという困難な問題は、Akka Stream の設計の中にすでに組み込まれているため、課題は一つクリアされたとも言えるでしょう。また、Reactive Stream のインターフェースがインターオペラビリティをもった SPI である一方で、その実装の一つとして Akka Stream が使い勝手の良いユーザー API を提供しています。つまり Akka Stream は他の全ての Reactive Stream 実装とシームレスに相互運用が可能なのです。</p>
+<div class="section" id="relationship-with-reactive-streams">
+<h3>Reactive Stream との関連について</h3>
+<p>Akka Stream API は Reactive Stream のインターフェースとは完全に切り離されています。Akka Stream がデータストリームにおける変換処理の定式化を重視する一方で、Reactive Stream のスコープは、データの消失、バッファリング、リソース枯渇を引き起こさずに、非同期境界をまたがってデータを移動させるための共通のメカニズムを定義しているにとどまっています。</p>
+<p>この二者は、Akka Stream API がエンドユーザーを対象としているのに対して、 Akka Stream 実装が異なるプロセシングステージへデータを渡すために内部的に Reactive Stream のインターフェースを利用しているという関係になっています。そのため、Reactive Stream のインターフェースと Akka Stream API の間には、何の類似性も見いだせないことでしょう。しかしこれは Reactive Stream プロジェクトの意図に反するものではありません。Reactive Stream の第一の目的は異なるストリーミング実装でも相互運用できるようなインターフェースを定義することであり、エンドユーザー API を記述することではないのです。</p>
+</div>
+</div>
+<div class="section" id="how-to-read-these-docs">
+<h2>ドキュメンテーションの読み方</h2>
+<p>ストリーミング処理はアクターモデルや Future 合成とは異なったパラダイムであり、その道具立てや技術に慣れるまでは、ある程度の学習を要することになると思われます。そのための手助けとしてドキュメンテーションを用意していますが、こを十二分に役立てるためには、以下の指針を参考にされると良いでしょう。</p>
+<ul class="simple">
+<li><p class="first">ストリームがどのようなものであり、何ができるようになるかを大まかに把握したい方は、:ref:<a href="#id1"><span class="problematic" id="id2">`</span></a>stream-quickstart-scala`を読んでください。</p>
+</li>
+<li><p class="first">順番に物事を理解してゆきたい方には、<a class="reference internal" href="../../general/stream/stream-design.html#stream-design"><span class="std std-ref">Design Principles behind Akka Streams</span></a> を精読することをお勧めします。</p>
+</li>
+<li><p class="first">実践から理解してゆきたい方には、:ref:<a href="#id1"><span class="problematic" id="id2">`</span></a>stream-cookbook-scala`に一通り目を通しておくのが良いかもしれません。</p>
+</li>
+<li><p class="first">標準プロセシングステージの概要を把握したい場合は、:ref:<a href="#id1"><span class="problematic" id="id2">`</span></a>stages-overview_scala`の表を参照してください。</p>
+</li>
+<li><p class="first">その他のセクションは順番に読んでも、必要に応じて読んでいってもどちらでも構いません。各セクションでは特定のトピックについて掘り下げてゆきます。</p>
+</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+          <div class="span3"><p class="contents-title">Contents</p>
+              <div id="scroller-anchor">
+                <div id="scroller">
+                  <div id="toc"></div>
+                </div>
+              </div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="footer">
+  <div class="container">
+    <ul>
+      <li><h5>Akka</h5></li>
+      <li><a href="http://akka.io/docs">Documentation</a></li>
+      <li><a href="http://doc.akka.io/docs/akka/current/additional/faq.html">FAQ</a></li>
+      <li><a href="http://akka.io/downloads">Downloads</a></li>
+      <li><a href="http://akka.io/news">News</a></li>
+      <li><a href="http://letitcrash.com">Blog</a></li>
+    </ul>
+    <ul>
+      <li><h5>Contribute</h5></li>
+      <li><a href="http://akka.io/community">Community Projects</a></li>
+      <li><a href="http://github.com/akka/akka">Source Code</a></li>
+      <li><a href="http://groups.google.com/group/akka-user">Mailing List</a></li>
+      <li><a href="http://doc.akka.io/docs/akka/current/project/issue-tracking.html">Report a Bug</a></li>
+    </ul>
+    <ul>
+      <li><h5>Company</h5></li>
+      <li><a href="http://www.lightbend.com/how/subscription">Commercial Support</a></li>
+      <li><a href="http://akka.io/team">Team</a></li>
+      <li><a href="mailto:info@lightbend.com">Contact</a></li>
+    </ul>
+    <ul>
+      <li><img src="../../_static/akka_icon_reverse.svg" align="center"/></li>
+    </ul>
+  </div>
+  <div class="container copyright">
+    <p style="float: left;">
+      © 2015 <a href="http://www.lightbend.com/">Lightbend Inc.</a> <span class="license">Akka is Open Source and available under the Apache 2 License.</span>
+    </p>
+    <p style="float: right; font-size: 12px;">
+      Last updated: 10月 15, 2016
+    </p>
+  </div>
+</div>
+<script type="text/javascript">
+  var $toc = $('#toc');
+  $toc.toc();
+
+  // show clickable section sign when section header hovered:
+  $('.section h2,.section h3,.section h4,.section h5').each(function(i, el) {
+      var $el = $(el);
+      $el.prepend($("<a class='section-marker' href='#" + $el.attr("id") + "'>&sect;</a>"))
+  });
+</script>
+
+<!-- Algolia docs search -->
+<script type="text/javascript">
+  var version = DOCUMENTATION_OPTIONS.VERSION;
+
+  var lang = "scala";
+  var path = window.location.pathname;
+  if (path.includes("/java/") || path.includes("java.html")) lang = "java";
+
+  console.log("Search configured for:", lang, "@", version);
+
+  docsearch({
+    apiKey: '543bad5ad786495d9ccd445ed34ed082',
+    indexName: 'akka_io',
+    inputSelector: '#search',
+    algoliaOptions: {
+      hitsPerPage: 5,
+      facetFilters: '[' + '["language:' + lang + '","language:general"]' + ',"version:' + version + '"]'
+    }
+  });
+
+  // set up "/" as global shortcut for focusing on search
+  $(document).keypress(function (event) {
+    if (event.keyCode == 47) {
+      $("#q").focus();
+      return false; // swallow key event, otherwise the / char would be input into the search box
+    }
+  });
+</script>
+
+  
+
+  </body>
+</html>

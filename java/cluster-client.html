@@ -1,0 +1,341 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Cluster Client &#8212; Akka Documentation</title>
+    
+    <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/prettify.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/base.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/docs.css" type="text/css" />
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '@version@',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/translations.js"></script>
+    <script type="text/javascript" src="../_static/toc.js"></script>
+    <script type="text/javascript" src="../_static/prettify.js"></script>
+    <script type="text/javascript" src="../_static/highlightCode.js"></script>
+    <script type="text/javascript" src="../_static/effects.core.js"></script>
+    <script type="text/javascript" src="../_static/effects.highlight.js"></script>
+    <script type="text/javascript" src="../_static/scrollTo.js"></script>
+    <script type="text/javascript" src="../_static/contentsFix.js"></script>
+    <script type="text/javascript" src="../_static/ga.js"></script>
+    <script type="text/javascript" src="../_static/warnOldDocs.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="top" title="Akka Documentation" href="../index.html" />
+    <link rel="up" title="Networking" href="index-network.html" />
+    <link rel="next" title="Cluster Sharding" href="cluster-sharding.html" />
+    <link rel="prev" title="Distributed Publish Subscribe in Cluster" href="distributed-pub-sub.html" />
+
+
+  </head>
+  <body role="document">
+  <div class="navbar">
+    <div class="navbar-inner">
+      <div class="container">
+        <div class="navbar-logo">
+          <a href="http://akka.io"><img class="svg-logo" src="../_static/akka_full_color.svg" /></a>
+        </div>
+        <ul class="nav">
+          <li><a href="http://akka.io/docs">Documentation</a></li>
+          <li><a href="http://doc.akka.io/docs/akka/current/additional/faq.html">FAQ</a></li>
+          <li><a href="http://akka.io/downloads">Download</a></li>
+          <li><a href="http://groups.google.com/group/akka-user">Mailing List</a></li>
+          <li><a href="http://github.com/akka/akka">Code</a></li>
+          <li><a href="http://www.lightbend.com/how/subscription">Commercial Support</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="main">
+    <div class="container">
+      <div class="page-title">Cluster Client</div>
+      <div class="pdf-link"><a href="../AkkaScala.pdf" title="Akka Scala Documentation"><img src="../_static/pdf-scala-icon.png" style="height: 40px;" /></a></div>
+      <div class="pdf-link"><a href="../AkkaJava.pdf" title="Akka Java Documentation"><img src="../_static/pdf-java-icon.png" style="height: 40px;" /></a></div>
+    </div>
+    <div class="main-container">
+      <div class="container">
+        <div class="row">
+          <div class="span12">
+            <ul class="breadcrumb">
+              <li>
+                 <span class="divider">|</span> <a href="cluster-sharding.html">Cluster Sharding</a> <span class="divider">»</span>
+              </li>
+              <li>
+                <a href="../java.html">Java Contents</a> <span class="divider">|</span> <a href="../scala.html">Scala Contents</a>
+              </li>
+              <li>
+                <span class="divider">«</span> <a href="distributed-pub-sub.html">Distributed Publish Subscribe in Cluster</a> <span class="divider">|</span>
+              </li>
+              <li style="float: left">
+                Version @version@
+              </li>
+              <li style="float: left">
+                <input type="search" id="search" class="form-control" />
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="row"><div class="span9">
+            
+  <div class="section" id="cluster-client">
+<span id="cluster-client-java"></span><h1>Cluster Client</h1>
+<p>An actor system that is not part of the cluster can communicate with actors
+somewhere in the cluster via this <code class="docutils literal"><span class="pre">ClusterClient</span></code>. The client can of course be part of
+another cluster. It only needs to know the location of one (or more) nodes to use as initial
+contact points. It will establish a connection to a <code class="docutils literal"><span class="pre">ClusterReceptionist</span></code> somewhere in
+the cluster. It will monitor the connection to the receptionist and establish a new
+connection if the link goes down. When looking for a new receptionist it uses fresh
+contact points retrieved from previous establishment, or periodically refreshed contacts,
+i.e. not necessarily the initial contact points.</p>
+<div class="admonition note">
+<p class="first admonition-title">注釈</p>
+<p class="last"><code class="docutils literal"><span class="pre">ClusterClient</span></code> should not be used when sending messages to actors that run
+within the same cluster. Similar functionality as the <code class="docutils literal"><span class="pre">ClusterClient</span></code> is
+provided in a more efficient way by <a class="reference internal" href="distributed-pub-sub.html#distributed-pub-sub-java"><span class="std std-ref">Distributed Publish Subscribe in Cluster</span></a> for actors that
+belong to the same cluster.</p>
+</div>
+<p>Also, note it's necessary to change <code class="docutils literal"><span class="pre">akka.actor.provider</span></code> from <code class="docutils literal"><span class="pre">local</span></code>
+to <code class="docutils literal"><span class="pre">remote</span></code> or <code class="docutils literal"><span class="pre">cluster</span></code> when using
+the cluster client.</p>
+<p>The receptionist is supposed to be started on all nodes, or all nodes with specified role,
+in the cluster. The receptionist can be started with the <code class="docutils literal"><span class="pre">ClusterClientReceptionist</span></code> extension
+or as an ordinary actor.</p>
+<p>You can send messages via the <code class="docutils literal"><span class="pre">ClusterClient</span></code> to any actor in the cluster that is registered
+in the <code class="docutils literal"><span class="pre">DistributedPubSubMediator</span></code> used by the <code class="docutils literal"><span class="pre">ClusterReceptionist</span></code>.
+The <code class="docutils literal"><span class="pre">ClusterClientReceptionist</span></code> provides methods for registration of actors that
+should be reachable from the client. Messages are wrapped in <code class="docutils literal"><span class="pre">ClusterClient.Send</span></code>,
+<code class="docutils literal"><span class="pre">ClusterClient.SendToAll</span></code> or <code class="docutils literal"><span class="pre">ClusterClient.Publish</span></code>.</p>
+<p>Both the <code class="docutils literal"><span class="pre">ClusterClient</span></code> and the <code class="docutils literal"><span class="pre">ClusterClientReceptionist</span></code> emit events that can be subscribed to.
+The <code class="docutils literal"><span class="pre">ClusterClient</span></code> sends out notifications in relation to having received a list of contact points
+from the <code class="docutils literal"><span class="pre">ClusterClientReceptionist</span></code>. One use of this list might be for the client to record its
+contact points. A client that is restarted could then use this information to supersede any previously
+configured contact points.</p>
+<p>The <code class="docutils literal"><span class="pre">ClusterClientReceptionist</span></code> sends out notifications in relation to having received a contact
+from a <code class="docutils literal"><span class="pre">ClusterClient</span></code>. This notification enables the server containing the receptionist to become aware of
+what clients are connected.</p>
+<p><strong>1. ClusterClient.Send</strong></p>
+<p>The message will be delivered to one recipient with a matching path, if any such
+exists. If several entries match the path the message will be delivered
+to one random destination. The sender() of the message can specify that local
+affinity is preferred, i.e. the message is sent to an actor in the same local actor
+system as the used receptionist actor, if any such exists, otherwise random to any other
+matching entry.</p>
+<p><strong>2. ClusterClient.SendToAll</strong></p>
+<p>The message will be delivered to all recipients with a matching path.</p>
+<p><strong>3. ClusterClient.Publish</strong></p>
+<p>The message will be delivered to all recipients Actors that have been registered as subscribers
+to the named topic.</p>
+<p>Response messages from the destination actor are tunneled via the receptionist
+to avoid inbound connections from other cluster nodes to the client, i.e.
+the <code class="docutils literal"><span class="pre">sender()</span></code>, as seen by the destination actor, is not the client itself.
+The <code class="docutils literal"><span class="pre">sender()</span></code> of the response messages, as seen by the client, is <code class="docutils literal"><span class="pre">deadLetters</span></code>
+since the client should normally send subsequent messages via the <code class="docutils literal"><span class="pre">ClusterClient</span></code>.
+It is possible to pass the original sender inside the reply messages if
+the client is supposed to communicate directly to the actor in the cluster.</p>
+<p>While establishing a connection to a receptionist the <code class="docutils literal"><span class="pre">ClusterClient</span></code> will buffer
+messages and send them when the connection is established. If the buffer is full
+the <code class="docutils literal"><span class="pre">ClusterClient</span></code> will drop old messages when new messages are sent via the client.
+The size of the buffer is configurable and it can be disabled by using a buffer size of 0.</p>
+<p>It's worth noting that messages can always be lost because of the distributed nature
+of these actors. As always, additional logic should be implemented in the destination
+(acknowledgement) and in the client (retry) actors to ensure at-least-once message delivery.</p>
+<div class="section" id="an-example">
+<h2>An Example</h2>
+<p>On the cluster nodes first start the receptionist. Note, it is recommended to load the extension
+when the actor system is started by defining it in the <code class="docutils literal"><span class="pre">akka.extensions</span></code> configuration property:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span>akka.extensions = [&quot;akka.cluster.client.ClusterClientReceptionist&quot;]
+</pre></div>
+</div>
+<p>Next, register the actors that should be available for the client.</p>
+<p>On the client you create the <code class="docutils literal"><span class="pre">ClusterClient</span></code> actor and use it as a gateway for sending
+messages to the actors identified by their path (without address information) somewhere
+in the cluster.</p>
+<p>The <code class="docutils literal"><span class="pre">initialContacts</span></code> parameter is a <code class="docutils literal"><span class="pre">Set&lt;ActorPath&gt;</span></code>, which can be created like this:</p>
+<p>You will probably define the address information of the initial contact points in configuration or system property.
+See also <a class="reference internal" href="#cluster-client-config-java"><span class="std std-ref">Configuration</span></a>.</p>
+<p>A more comprehensive sample is available in the <a class="reference external" href="http://www.lightbend.com/platform/getstarted">Lightbend Activator</a>
+tutorial named <a class="reference external" href="http://www.lightbend.com/activator/template/akka-distributed-workers-java">Distributed workers with Akka and Java!</a>.</p>
+</div>
+<div class="section" id="clusterclientreceptionist-extension">
+<h2>ClusterClientReceptionist Extension</h2>
+<p>In the example above the receptionist is started and accessed with the <code class="docutils literal"><span class="pre">akka.cluster.client.ClusterClientReceptionist</span></code> extension.
+That is convenient and perfectly fine in most cases, but it can be good to know that it is possible to
+start the <code class="docutils literal"><span class="pre">akka.cluster.client.ClusterReceptionist</span></code> actor as an ordinary actor and you can have several
+different receptionists at the same time, serving different types of clients.</p>
+<p>Note that the <code class="docutils literal"><span class="pre">ClusterClientReceptionist</span></code> uses the <code class="docutils literal"><span class="pre">DistributedPubSub</span></code> extension, which is described
+in <a class="reference internal" href="distributed-pub-sub.html#distributed-pub-sub-java"><span class="std std-ref">Distributed Publish Subscribe in Cluster</span></a>.</p>
+<p>It is recommended to load the extension when the actor system is started by defining it in the
+<code class="docutils literal"><span class="pre">akka.extensions</span></code> configuration property:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span>akka.extensions = [&quot;akka.cluster.client.ClusterClientReceptionist&quot;]
+</pre></div>
+</div>
+</div>
+<div class="section" id="events">
+<h2>Events</h2>
+<p>As mentioned earlier, both the <code class="docutils literal"><span class="pre">ClusterClient</span></code> and <code class="docutils literal"><span class="pre">ClusterClientReceptionist</span></code> emit events that can be subscribed to.
+The following code snippet declares an actor that will receive notifications on contact points (addresses to the available
+receptionists), as they become available. The code illustrates subscribing to the events and receiving the <code class="docutils literal"><span class="pre">ClusterClient</span></code>
+initial state.</p>
+<p>Similarly we can have an actor that behaves in a similar fashion for learning what cluster clients contact a <code class="docutils literal"><span class="pre">ClusterClientReceptionist</span></code>:</p>
+</div>
+<div class="section" id="dependencies">
+<h2>Dependencies</h2>
+<p>To use the Cluster Client you must add the following dependency in your project.</p>
+<p>sbt:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="s">&quot;com.typesafe.akka&quot;</span> <span class="o">%%</span> <span class="s">&quot;akka-cluster-tools&quot;</span> <span class="o">%</span> <span class="s">&quot;@version@&quot;</span> <span class="nd">@crossString</span><span class="k">@</span>
+</pre></div>
+</div>
+<p>maven:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">dependency</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">groupId</span><span class="o">&gt;</span><span class="n">com</span><span class="o">.</span><span class="n">typesafe</span><span class="o">.</span><span class="n">akka</span><span class="o">&lt;/</span><span class="n">groupId</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">artifactId</span><span class="o">&gt;</span><span class="n">akka</span><span class="o">-</span><span class="n">cluster</span><span class="o">-</span><span class="n">tools_@binVersion</span><span class="o">@&lt;/</span><span class="n">artifactId</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">version</span><span class="o">&gt;@</span><span class="n">version</span><span class="o">@&lt;/</span><span class="n">version</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">dependency</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="configuration">
+<span id="cluster-client-config-java"></span><h2>Configuration</h2>
+<p>The <code class="docutils literal"><span class="pre">ClusterClientReceptionist</span></code> extension (or <code class="docutils literal"><span class="pre">ClusterReceptionistSettings</span></code>) can be configured
+with the following properties:</p>
+<p>The following configuration properties are read by the <code class="docutils literal"><span class="pre">ClusterClientSettings</span></code>
+when created with a <code class="docutils literal"><span class="pre">ActorSystem</span></code> parameter. It is also possible to amend the <code class="docutils literal"><span class="pre">ClusterClientSettings</span></code>
+or create it from another config section with the same layout as below. <code class="docutils literal"><span class="pre">ClusterClientSettings</span></code> is
+a parameter to the <code class="docutils literal"><span class="pre">ClusterClient.props</span></code> factory method, i.e. each client can be configured
+with different settings if needed.</p>
+</div>
+<div class="section" id="failure-handling">
+<h2>Failure handling</h2>
+<p>When the cluster client is started it must be provided with a list of initial contacts which are cluster
+nodes where receptionists are running. It will then repeatedly (with an interval configurable
+by <code class="docutils literal"><span class="pre">establishing-get-contacts-interval</span></code>) try to contact those until it gets in contact with one of them.
+While running, the list of contacts are continuously updated with data from the receptionists (again, with an
+interval configurable with <code class="docutils literal"><span class="pre">refresh-contacts-interval</span></code>), so that if there are more receptionists in the cluster
+than the initial contacts provided to the client the client will learn about them.</p>
+<p>While the client is running it will detect failures in its connection to the receptionist by heartbeats
+if more than a configurable amount of heartbeats are missed the client will try to reconnect to its known
+set of contacts to find a receptionist it can access.</p>
+</div>
+<div class="section" id="when-the-cluster-cannot-be-reached-at-all">
+<h2>When the cluster cannot be reached at all</h2>
+<p>It is possible to make the cluster client stop entirely if it cannot find a receptionist it can talk to
+within a configurable interval. This is configured with the <code class="docutils literal"><span class="pre">reconnect-timeout</span></code>, which defaults to <code class="docutils literal"><span class="pre">off</span></code>.
+This can be useful when initial contacts are provided from some kind of service registry, cluster node addresses
+are entirely dynamic and the entire cluster might shut down or crash, be restarted on new addresses. Since the
+client will be stopped in that case a monitoring actor can watch it and upon <code class="docutils literal"><span class="pre">Terminate</span></code> a new set of initial
+contacts can be fetched and a new cluster client started.</p>
+</div>
+</div>
+
+
+          </div>
+          <div class="span3"><p class="contents-title">Contents</p>
+              <div id="scroller-anchor">
+                <div id="scroller">
+                  <div id="toc"></div>
+                </div>
+              </div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="footer">
+  <div class="container">
+    <ul>
+      <li><h5>Akka</h5></li>
+      <li><a href="http://akka.io/docs">Documentation</a></li>
+      <li><a href="http://doc.akka.io/docs/akka/current/additional/faq.html">FAQ</a></li>
+      <li><a href="http://akka.io/downloads">Downloads</a></li>
+      <li><a href="http://akka.io/news">News</a></li>
+      <li><a href="http://letitcrash.com">Blog</a></li>
+    </ul>
+    <ul>
+      <li><h5>Contribute</h5></li>
+      <li><a href="http://akka.io/community">Community Projects</a></li>
+      <li><a href="http://github.com/akka/akka">Source Code</a></li>
+      <li><a href="http://groups.google.com/group/akka-user">Mailing List</a></li>
+      <li><a href="http://doc.akka.io/docs/akka/current/project/issue-tracking.html">Report a Bug</a></li>
+    </ul>
+    <ul>
+      <li><h5>Company</h5></li>
+      <li><a href="http://www.lightbend.com/how/subscription">Commercial Support</a></li>
+      <li><a href="http://akka.io/team">Team</a></li>
+      <li><a href="mailto:info@lightbend.com">Contact</a></li>
+    </ul>
+    <ul>
+      <li><img src="../_static/akka_icon_reverse.svg" align="center"/></li>
+    </ul>
+  </div>
+  <div class="container copyright">
+    <p style="float: left;">
+      © 2015 <a href="http://www.lightbend.com/">Lightbend Inc.</a> <span class="license">Akka is Open Source and available under the Apache 2 License.</span>
+    </p>
+    <p style="float: right; font-size: 12px;">
+      Last updated: 10月 15, 2016
+    </p>
+  </div>
+</div>
+<script type="text/javascript">
+  var $toc = $('#toc');
+  $toc.toc();
+
+  // show clickable section sign when section header hovered:
+  $('.section h2,.section h3,.section h4,.section h5').each(function(i, el) {
+      var $el = $(el);
+      $el.prepend($("<a class='section-marker' href='#" + $el.attr("id") + "'>&sect;</a>"))
+  });
+</script>
+
+<!-- Algolia docs search -->
+<script type="text/javascript">
+  var version = DOCUMENTATION_OPTIONS.VERSION;
+
+  var lang = "scala";
+  var path = window.location.pathname;
+  if (path.includes("/java/") || path.includes("java.html")) lang = "java";
+
+  console.log("Search configured for:", lang, "@", version);
+
+  docsearch({
+    apiKey: '543bad5ad786495d9ccd445ed34ed082',
+    indexName: 'akka_io',
+    inputSelector: '#search',
+    algoliaOptions: {
+      hitsPerPage: 5,
+      facetFilters: '[' + '["language:' + lang + '","language:general"]' + ',"version:' + version + '"]'
+    }
+  });
+
+  // set up "/" as global shortcut for focusing on search
+  $(document).keypress(function (event) {
+    if (event.keyCode == 47) {
+      $("#q").focus();
+      return false; // swallow key event, otherwise the / char would be input into the search box
+    }
+  });
+</script>
+
+  
+
+  </body>
+</html>

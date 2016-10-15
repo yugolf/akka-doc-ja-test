@@ -1,0 +1,315 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Cluster Metrics Extension &#8212; Akka Documentation</title>
+    
+    <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/prettify.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/base.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/docs.css" type="text/css" />
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '@version@',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/translations.js"></script>
+    <script type="text/javascript" src="../_static/toc.js"></script>
+    <script type="text/javascript" src="../_static/prettify.js"></script>
+    <script type="text/javascript" src="../_static/highlightCode.js"></script>
+    <script type="text/javascript" src="../_static/effects.core.js"></script>
+    <script type="text/javascript" src="../_static/effects.highlight.js"></script>
+    <script type="text/javascript" src="../_static/scrollTo.js"></script>
+    <script type="text/javascript" src="../_static/contentsFix.js"></script>
+    <script type="text/javascript" src="../_static/ga.js"></script>
+    <script type="text/javascript" src="../_static/warnOldDocs.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="top" title="Akka Documentation" href="../index.html" />
+    <link rel="up" title="Networking" href="index-network.html" />
+    <link rel="next" title="Distributed Data" href="distributed-data.html" />
+    <link rel="prev" title="Cluster Sharding" href="cluster-sharding.html" />
+
+
+  </head>
+  <body role="document">
+  <div class="navbar">
+    <div class="navbar-inner">
+      <div class="container">
+        <div class="navbar-logo">
+          <a href="http://akka.io"><img class="svg-logo" src="../_static/akka_full_color.svg" /></a>
+        </div>
+        <ul class="nav">
+          <li><a href="http://akka.io/docs">Documentation</a></li>
+          <li><a href="http://doc.akka.io/docs/akka/current/additional/faq.html">FAQ</a></li>
+          <li><a href="http://akka.io/downloads">Download</a></li>
+          <li><a href="http://groups.google.com/group/akka-user">Mailing List</a></li>
+          <li><a href="http://github.com/akka/akka">Code</a></li>
+          <li><a href="http://www.lightbend.com/how/subscription">Commercial Support</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="main">
+    <div class="container">
+      <div class="page-title">Cluster Metrics Extension</div>
+      <div class="pdf-link"><a href="../AkkaScala.pdf" title="Akka Scala Documentation"><img src="../_static/pdf-scala-icon.png" style="height: 40px;" /></a></div>
+      <div class="pdf-link"><a href="../AkkaJava.pdf" title="Akka Java Documentation"><img src="../_static/pdf-java-icon.png" style="height: 40px;" /></a></div>
+    </div>
+    <div class="main-container">
+      <div class="container">
+        <div class="row">
+          <div class="span12">
+            <ul class="breadcrumb">
+              <li>
+                 <span class="divider">|</span> <a href="distributed-data.html">Distributed Data</a> <span class="divider">»</span>
+              </li>
+              <li>
+                <a href="../java.html">Java Contents</a> <span class="divider">|</span> <a href="../scala.html">Scala Contents</a>
+              </li>
+              <li>
+                <span class="divider">«</span> <a href="cluster-sharding.html">Cluster Sharding</a> <span class="divider">|</span>
+              </li>
+              <li style="float: left">
+                Version @version@
+              </li>
+              <li style="float: left">
+                <input type="search" id="search" class="form-control" />
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="row"><div class="span9">
+            
+  <div class="section" id="cluster-metrics-extension">
+<span id="cluster-metrics-scala"></span><h1>Cluster Metrics Extension</h1>
+<div class="section" id="introduction">
+<h2>Introduction</h2>
+<p>The member nodes of the cluster can collect system health metrics and publish that to other cluster nodes
+and to the registered subscribers on the system event bus with the help of Cluster Metrics Extension.</p>
+<p>Cluster metrics information is primarily used for load-balancing routers,
+and can also be used to implement advanced metrics-based node life cycles,
+such as &quot;Node Let-it-crash&quot; when CPU steal time becomes excessive.</p>
+<p>Cluster Metrics Extension is a separate Akka module delivered in <code class="docutils literal"><span class="pre">akka-cluster-metrics</span></code> jar.</p>
+<p>To enable usage of the extension you need to add the following dependency to your project:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="s">&quot;com.typesafe.akka&quot;</span> <span class="o">%</span> <span class="s">&quot;akka-cluster-metrics_@binVersion@&quot;</span> <span class="o">%</span> <span class="s">&quot;@version@&quot;</span>
+</pre></div>
+</div>
+<p>and add the following configuration stanza to your <code class="docutils literal"><span class="pre">application.conf</span></code></p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span>akka.extensions = [ &quot;akka.cluster.metrics.ClusterMetricsExtension&quot; ]
+</pre></div>
+</div>
+<p>Make sure to disable legacy metrics in akka-cluster: <code class="docutils literal"><span class="pre">akka.cluster.metrics.enabled=off</span></code>,
+since it is still enabled in akka-cluster by default (for compatibility with past releases).</p>
+<p>Cluster members with status <a class="reference internal" href="cluster-usage.html#weakly-up-scala"><span class="std std-ref">WeaklyUp</span></a>, if that feature is enabled,
+will participate in Cluster Metrics collection and dissemination.</p>
+</div>
+<div class="section" id="metrics-collector">
+<h2>Metrics Collector</h2>
+<p>Metrics collection is delegated to an implementation of <code class="docutils literal"><span class="pre">akka.cluster.metrics.MetricsCollector</span></code>.</p>
+<p>Different collector implementations provide different subsets of metrics published to the cluster.
+Certain message routing and let-it-crash functions may not work when Sigar is not provisioned.</p>
+<p>Cluster metrics extension comes with two built-in collector implementations:</p>
+<ol class="arabic simple">
+<li><code class="docutils literal"><span class="pre">akka.cluster.metrics.SigarMetricsCollector</span></code>, which requires Sigar provisioning, and is more rich/precise</li>
+<li><code class="docutils literal"><span class="pre">akka.cluster.metrics.JmxMetricsCollector</span></code>, which is used as fall back, and is less rich/precise</li>
+</ol>
+<p>You can also plug-in your own metrics collector implementation.</p>
+<p>By default, metrics extension will use collector provider fall back and will try to load them in this order:</p>
+<ol class="arabic simple">
+<li>configured user-provided collector</li>
+<li>built-in <code class="docutils literal"><span class="pre">akka.cluster.metrics.SigarMetricsCollector</span></code></li>
+<li>and finally <code class="docutils literal"><span class="pre">akka.cluster.metrics.JmxMetricsCollector</span></code></li>
+</ol>
+</div>
+<div class="section" id="metrics-events">
+<h2>Metrics Events</h2>
+<p>Metrics extension periodically publishes current snapshot of the cluster metrics to the node system event bus.</p>
+<p>The publication period is controlled by the <code class="docutils literal"><span class="pre">akka.cluster.metrics.collector.sample-period</span></code> setting.</p>
+<p>The payload of the <code class="docutils literal"><span class="pre">akka.cluster.metrics.ClusterMetricsChanged</span></code> event will contain
+latest metrics of the node as well as other cluster member nodes metrics gossip
+which was received during the collector sample period.</p>
+<p>You can subscribe your metrics listener actors to these events in order to implement custom node lifecycle</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="nc">ClusterMetricsExtension</span><span class="o">(</span><span class="n">system</span><span class="o">).</span><span class="n">subscribe</span><span class="o">(</span><span class="n">metricsListenerActor</span><span class="o">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="hyperic-sigar-provisioning">
+<h2>Hyperic Sigar Provisioning</h2>
+<p>Both user-provided and built-in metrics collectors can optionally use <a class="reference external" href="http://www.hyperic.com/products/sigar">Hyperic Sigar</a>
+for a wider and more accurate range of metrics compared to what can be retrieved from ordinary JMX MBeans.</p>
+<p>Sigar is using a native o/s library, and requires library provisioning, i.e.
+deployment, extraction and loading of the o/s native library into JVM at runtime.</p>
+<p>User can provision Sigar classes and native library in one of the following ways:</p>
+<ol class="arabic simple">
+<li>Use <a class="reference external" href="https://github.com/kamon-io/sigar-loader">Kamon sigar-loader</a> as a project dependency for the user project.
+Metrics extension will extract and load sigar library on demand with help of Kamon sigar provisioner.</li>
+<li>Use <a class="reference external" href="https://github.com/kamon-io/sigar-loader">Kamon sigar-loader</a> as java agent: <code class="docutils literal"><span class="pre">java</span> <span class="pre">-javaagent:/path/to/sigar-loader.jar</span></code>.
+Kamon sigar loader agent will extract and load sigar library during JVM start.</li>
+<li>Place <code class="docutils literal"><span class="pre">sigar.jar</span></code> on the <code class="docutils literal"><span class="pre">classpath</span></code> and Sigar native library for the o/s on the <code class="docutils literal"><span class="pre">java.library.path</span></code>.
+User is required to manage both project dependency and library deployment manually.</li>
+</ol>
+<div class="admonition warning">
+<p class="first admonition-title">警告</p>
+<p class="last">When using <a class="reference external" href="https://github.com/kamon-io/sigar-loader">Kamon sigar-loader</a> and running multiple
+instances of the same application on the same host, you have to make sure that sigar library is extracted to a
+unique per instance directory. You can control the extract directory with the
+<code class="docutils literal"><span class="pre">akka.cluster.metrics.native-library-extract-folder</span></code> configuration setting.</p>
+</div>
+<p>To enable usage of Sigar you can add the following dependency to the user project</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="s">&quot;io.kamon&quot;</span> <span class="o">%</span> <span class="s">&quot;sigar-loader&quot;</span> <span class="o">%</span> <span class="s">&quot;@sigarLoaderVersion@&quot;</span>
+</pre></div>
+</div>
+<p>You can download Kamon sigar-loader from <a class="reference external" href="http://search.maven.org/#search%7Cga%7C1%7Csigar-loader">Maven Central</a></p>
+</div>
+<div class="section" id="adaptive-load-balancing">
+<h2>Adaptive Load Balancing</h2>
+<p>The <code class="docutils literal"><span class="pre">AdaptiveLoadBalancingPool</span></code> / <code class="docutils literal"><span class="pre">AdaptiveLoadBalancingGroup</span></code> performs load balancing of messages to cluster nodes based on the cluster metrics data.
+It uses random selection of routees with probabilities derived from the remaining capacity of the corresponding node.
+It can be configured to use a specific MetricsSelector to produce the probabilities, a.k.a. weights:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">heap</span></code> / <code class="docutils literal"><span class="pre">HeapMetricsSelector</span></code> - Used and max JVM heap memory. Weights based on remaining heap capacity; (max - used) / max</li>
+<li><code class="docutils literal"><span class="pre">load</span></code> / <code class="docutils literal"><span class="pre">SystemLoadAverageMetricsSelector</span></code> - System load average for the past 1 minute, corresponding value can be found in <code class="docutils literal"><span class="pre">top</span></code> of Linux systems. The system is possibly nearing a bottleneck if the system load average is nearing number of cpus/cores. Weights based on remaining load capacity; 1 - (load / processors)</li>
+<li><code class="docutils literal"><span class="pre">cpu</span></code> / <code class="docutils literal"><span class="pre">CpuMetricsSelector</span></code> - CPU utilization in percentage, sum of User + Sys + Nice + Wait. Weights based on remaining cpu capacity; 1 - utilization</li>
+<li><code class="docutils literal"><span class="pre">mix</span></code> / <code class="docutils literal"><span class="pre">MixMetricsSelector</span></code> - Combines heap, cpu and load. Weights based on mean of remaining capacity of the combined selectors.</li>
+<li>Any custom implementation of <code class="docutils literal"><span class="pre">akka.cluster.metrics.MetricsSelector</span></code></li>
+</ul>
+<p>The collected metrics values are smoothed with <a class="reference external" href="http://en.wikipedia.org/wiki/Moving_average#Exponential_moving_average">exponential weighted moving average</a>. In the <a class="reference internal" href="cluster-usage.html#cluster-configuration-scala"><span class="std std-ref">Configuration</span></a> you can adjust how quickly past data is decayed compared to new data.</p>
+<p>Let's take a look at this router in action. What can be more demanding than calculating factorials?</p>
+<p>The backend worker that performs the factorial calculation:</p>
+<p>The frontend that receives user jobs and delegates to the backends via the router:</p>
+<p>As you can see, the router is defined in the same way as other routers, and in this case it is configured as follows:</p>
+<p>It is only <code class="docutils literal"><span class="pre">router</span></code> type and the <code class="docutils literal"><span class="pre">metrics-selector</span></code> parameter that is specific to this router,
+other things work in the same way as other routers.</p>
+<p>The same type of router could also have been defined in code:</p>
+<p>The <a class="reference external" href="http://www.lightbend.com/platform/getstarted">Lightbend Activator</a> tutorial named
+<a class="reference external" href="http://www.lightbend.com/activator/template/akka-sample-cluster-scala">Akka Cluster Samples with Scala</a>.
+contains the full source code and instructions of how to run the <strong>Adaptive Load Balancing</strong> sample.</p>
+</div>
+<div class="section" id="subscribe-to-metrics-events">
+<h2>Subscribe to Metrics Events</h2>
+<p>It is possible to subscribe to the metrics events directly to implement other functionality.</p>
+</div>
+<div class="section" id="custom-metrics-collector">
+<h2>Custom Metrics Collector</h2>
+<p>Metrics collection is delegated to the implementation of <code class="docutils literal"><span class="pre">akka.cluster.metrics.MetricsCollector</span></code></p>
+<p>You can plug-in your own metrics collector instead of built-in
+<code class="docutils literal"><span class="pre">akka.cluster.metrics.SigarMetricsCollector</span></code> or <code class="docutils literal"><span class="pre">akka.cluster.metrics.JmxMetricsCollector</span></code>.</p>
+<p>Look at those two implementations for inspiration.</p>
+<p>Custom metrics collector implementation class must be specified in the
+<code class="docutils literal"><span class="pre">akka.cluster.metrics.collector.provider</span></code> configuration property.</p>
+</div>
+<div class="section" id="configuration">
+<h2>Configuration</h2>
+<p>The Cluster metrics extension can be configured with the following properties:</p>
+</div>
+</div>
+
+
+          </div>
+          <div class="span3"><p class="contents-title">Contents</p>
+              <div id="scroller-anchor">
+                <div id="scroller">
+                  <div id="toc"></div>
+                </div>
+              </div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="footer">
+  <div class="container">
+    <ul>
+      <li><h5>Akka</h5></li>
+      <li><a href="http://akka.io/docs">Documentation</a></li>
+      <li><a href="http://doc.akka.io/docs/akka/current/additional/faq.html">FAQ</a></li>
+      <li><a href="http://akka.io/downloads">Downloads</a></li>
+      <li><a href="http://akka.io/news">News</a></li>
+      <li><a href="http://letitcrash.com">Blog</a></li>
+    </ul>
+    <ul>
+      <li><h5>Contribute</h5></li>
+      <li><a href="http://akka.io/community">Community Projects</a></li>
+      <li><a href="http://github.com/akka/akka">Source Code</a></li>
+      <li><a href="http://groups.google.com/group/akka-user">Mailing List</a></li>
+      <li><a href="http://doc.akka.io/docs/akka/current/project/issue-tracking.html">Report a Bug</a></li>
+    </ul>
+    <ul>
+      <li><h5>Company</h5></li>
+      <li><a href="http://www.lightbend.com/how/subscription">Commercial Support</a></li>
+      <li><a href="http://akka.io/team">Team</a></li>
+      <li><a href="mailto:info@lightbend.com">Contact</a></li>
+    </ul>
+    <ul>
+      <li><img src="../_static/akka_icon_reverse.svg" align="center"/></li>
+    </ul>
+  </div>
+  <div class="container copyright">
+    <p style="float: left;">
+      © 2015 <a href="http://www.lightbend.com/">Lightbend Inc.</a> <span class="license">Akka is Open Source and available under the Apache 2 License.</span>
+    </p>
+    <p style="float: right; font-size: 12px;">
+      Last updated: 10月 15, 2016
+    </p>
+  </div>
+</div>
+<script type="text/javascript">
+  var $toc = $('#toc');
+  $toc.toc();
+
+  // show clickable section sign when section header hovered:
+  $('.section h2,.section h3,.section h4,.section h5').each(function(i, el) {
+      var $el = $(el);
+      $el.prepend($("<a class='section-marker' href='#" + $el.attr("id") + "'>&sect;</a>"))
+  });
+</script>
+
+<!-- Algolia docs search -->
+<script type="text/javascript">
+  var version = DOCUMENTATION_OPTIONS.VERSION;
+
+  var lang = "scala";
+  var path = window.location.pathname;
+  if (path.includes("/java/") || path.includes("java.html")) lang = "java";
+
+  console.log("Search configured for:", lang, "@", version);
+
+  docsearch({
+    apiKey: '543bad5ad786495d9ccd445ed34ed082',
+    indexName: 'akka_io',
+    inputSelector: '#search',
+    algoliaOptions: {
+      hitsPerPage: 5,
+      facetFilters: '[' + '["language:' + lang + '","language:general"]' + ',"version:' + version + '"]'
+    }
+  });
+
+  // set up "/" as global shortcut for focusing on search
+  $(document).keypress(function (event) {
+    if (event.keyCode == 47) {
+      $("#q").focus();
+      return false; // swallow key event, otherwise the / char would be input into the search box
+    }
+  });
+</script>
+
+  
+
+  </body>
+</html>
