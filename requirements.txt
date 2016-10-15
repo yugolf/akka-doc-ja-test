@@ -12,7 +12,6 @@ numpy==1.8.0
 py2app==0.7.3
 pyasn1==0.1.9
 Pygments==1.5
-pyobjc-core==2.5.1
 pyOpenSSL==0.13.1
 pyparsing==2.0.1
 python-dateutil==1.5
