@@ -4,3 +4,4 @@ test
 Akka-ja のテスト用リポジトリ
 test
 test
+test
