@@ -1,2 +1,4 @@
 # akka-doc-ja-test
 test
+
+Akka-ja のテスト用リポジトリ
